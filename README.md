@@ -53,9 +53,12 @@ Use the same PATH wrapper to run pnpm commands in that environment. Retry your a
 Set server-only values in `.env` or the host's secret environment:
 
 - `LLM_BASE_URL`: API base, normally including `/v1`. Do not append `/responses` or `/chat/completions`; the SDK appends the operation path.
+- `LLM_API_PROTOCOL`: `chat-completions` (default, compatible provider) or `responses` (OpenAI Responses adapter). Applies to generation, revisions, analysis and streaming question chat.
 - `LLM_API_KEY`: bearer API key.
 - `LLM_MODEL`: model ID served by the endpoint.
 - `LLM_STRUCTURED_OUTPUTS=true` only if the endpoint supports native JSON-schema output. Otherwise the application requests JSON as text and validates it locally.
+
+For the new OpenCode Console gateway, configure `LLM_BASE_URL=https://opencode.ai/inference/openai/v1`, `LLM_API_PROTOCOL=responses`, `LLM_MODEL=gpt-6-luna`, and your service account key as `LLM_API_KEY`. Leave structured outputs disabled until verified against your gateway. Restart the application after changing environment variables.
 
 - `AI_ADAPTER=live` for real requests (default).
 

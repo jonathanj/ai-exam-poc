@@ -1,5 +1,5 @@
 import { generateText, streamText, Output, type ModelMessage } from "ai";
-import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { liveAiConfig, liveModel } from "./ai-model";
 import { z } from "zod";
 import { HttpError } from "./http";
 import { db } from "./db";
@@ -7,12 +7,7 @@ import { json } from "./exams";
 import * as prompts from "./prompts/v1";
 export const fixtureMode = () => process.env.AI_ADAPTER === "fixture";
 export function checkAi() {
-  if (!fixtureMode() && (!process.env.LLM_BASE_URL || !process.env.LLM_API_KEY || !process.env.LLM_MODEL))
-    throw new HttpError(503, "Live AI is not configured. Set LLM_BASE_URL, LLM_API_KEY and LLM_MODEL on the server, or explicitly enable AI_ADAPTER=fixture for sample data.");
-}
-function model() {
-  checkAi();
-  return createOpenAICompatible({ name: "exam-endpoint", baseURL: process.env.LLM_BASE_URL!, apiKey: process.env.LLM_API_KEY!, supportsStructuredOutputs: process.env.LLM_STRUCTURED_OUTPUTS === "true" })(process.env.LLM_MODEL!);
+  if (!fixtureMode()) liveAiConfig();
 }
 export async function startRun(
   examId: string,
@@ -90,7 +85,7 @@ export async function validatedGeneration<T>({
       const prompt = `${task}\nCONTEXT:\n${JSON.stringify(context)}\nReturn only JSON matching this schema: ${JSON.stringify(z.toJSONSchema(schema))}${errors.length ? `\nRepair these validation errors in a fresh complete response: ${errors.join("; ")}` : ""}`;
       if (process.env.LLM_STRUCTURED_OUTPUTS === "true") {
         const result = await generateText({
-          model: model(),
+          model: liveModel(),
           system: prompts.common,
           prompt,
           output: Output.object({ schema }),
@@ -101,7 +96,7 @@ export async function validatedGeneration<T>({
         usage = result.totalUsage;
       } else {
         const result = await generateText({
-          model: model(),
+          model: liveModel(),
           system: prompts.common,
           prompt,
           maxRetries: 0,
@@ -160,7 +155,7 @@ export async function* conversation(
     return { inputTokens: 0, outputTokens: 0 };
   }
   const result = streamText({
-    model: model(),
+    model: liveModel(),
     system: `${prompts.common}\n${prompts.conversation}\nCONTEXT: ${JSON.stringify(context)}`,
     messages,
     maxRetries: 0,
