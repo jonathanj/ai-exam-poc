@@ -26,4 +26,8 @@ Production build, typecheck and lint pass. Browser tests verify login, logout, u
 
 ## Deviations and limitations
 
-Pinned Prisma 7.10 instead of the registry's latest release candidate; TypeScript 6 and ESLint 9 match the installed Next lint ecosystem's peer ranges. Patched shadcn's random skeleton width and mobile hook to comply with current React lint rules. Migration configuration creates the SQLite file before migration because this engine rejected a nonexistent file. No external fonts. HTTPS is required for production cookies. Login throttling is in-memory and single-instance. The supplied directory had no Git repository; no commit references are available, and pnpm-lock.yaml is included for source control.
+Pinned Prisma 7.10 instead of the registry's latest release candidate; TypeScript 6 and ESLint 9 match the installed Next lint ecosystem's peer ranges. Patched shadcn's random skeleton width and mobile hook to comply with current React lint rules. Migration configuration creates the SQLite file before migration because this engine rejected a nonexistent file. No external fonts. HTTPS is required for production cookies. Login throttling is in-memory and single-instance. The supplied directory initially had no Git repository. The implementation history was later assembled into reviewed logical increments with pnpm-lock.yaml included.
+
+## Commit reference
+
+`6e33c36` — feat(foundation): scaffold private examiner workspace

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { generateText, Output } from "ai";
 import { z } from "zod";
-import { liveAiConfig, liveModel } from "../src/lib/ai-model";
+import { inferenceHeaders, liveAiConfig, liveModel } from "../src/lib/ai-model";
 
 beforeEach(() => {
   vi.stubEnv("LLM_BASE_URL", "https://example.test/inference/openai/v1/");
@@ -16,6 +16,16 @@ afterEach(() => {
 });
 
 describe("inference protocol transport", () => {
+  it("keeps session IDs stable per exam and distinct between exams", () => {
+    expect(inferenceHeaders("exam-a")).toEqual(inferenceHeaders("exam-a"));
+    expect(inferenceHeaders("exam-a")["x-opencode-session"]).not.toBe(
+      inferenceHeaders("exam-b")["x-opencode-session"],
+    );
+    expect(inferenceHeaders("exam-a")["x-opencode-session"]).not.toContain(
+      "exam-a",
+    );
+    expect(() => inferenceHeaders("")).toThrow("require an exam session");
+  });
   it.each(["responses", "chat/completions"])(
     "rejects operation suffix %s before a request",
     (suffix) => {
@@ -79,7 +89,7 @@ describe("inference protocol transport", () => {
       );
       vi.stubGlobal("fetch", fetchMock);
       const result = await generateText({
-        model: liveModel(),
+        model: liveModel("test-exam"),
         prompt: "Return value 3",
         output: Output.object({ schema: z.object({ value: z.number() }) }),
         maxRetries: 0,
@@ -93,6 +103,11 @@ describe("inference protocol transport", () => {
         `https://example.test/inference/openai/v1/${protocol === "responses" ? "responses" : "chat/completions"}`,
       );
       const body = JSON.parse(options.body as string);
+      const headers = new Headers(options.headers);
+      expect(headers.get("x-opencode-session")).toBe(
+        inferenceHeaders("test-exam")["x-opencode-session"],
+      );
+      expect(headers.get("user-agent")).toContain("exam-studio/0.1.0");
       expect(body.model).toBe("gpt-6-luna");
       if (protocol === "responses") {
         expect(body.text.format.type).toBe("json_schema");

@@ -1,5 +1,6 @@
 import { generateText, streamText, Output, type ModelMessage } from "ai";
 import { liveAiConfig, liveModel } from "./ai-model";
+import { logAiFailure } from "./ai-diagnostics";
 import { z } from "zod";
 import { HttpError } from "./http";
 import { db } from "./db";
@@ -54,6 +55,7 @@ export async function finishRun(
   });
 }
 export async function validatedGeneration<T>({
+  examId,
   task,
   context,
   schema,
@@ -61,6 +63,7 @@ export async function validatedGeneration<T>({
   fixture,
   onValidation,
 }: {
+  examId: string;
   task: string;
   context: unknown;
   schema: z.ZodType<T>;
@@ -85,7 +88,7 @@ export async function validatedGeneration<T>({
       const prompt = `${task}\nCONTEXT:\n${JSON.stringify(context)}\nReturn only JSON matching this schema: ${JSON.stringify(z.toJSONSchema(schema))}${errors.length ? `\nRepair these validation errors in a fresh complete response: ${errors.join("; ")}` : ""}`;
       if (process.env.LLM_STRUCTURED_OUTPUTS === "true") {
         const result = await generateText({
-          model: liveModel(),
+          model: liveModel(examId),
           system: prompts.common,
           prompt,
           output: Output.object({ schema }),
@@ -96,7 +99,7 @@ export async function validatedGeneration<T>({
         usage = result.totalUsage;
       } else {
         const result = await generateText({
-          model: liveModel(),
+          model: liveModel(examId),
           system: prompts.common,
           prompt,
           maxRetries: 0,
@@ -121,6 +124,7 @@ export async function validatedGeneration<T>({
         await onValidation?.(errors);
         continue;
       }
+      logAiFailure(error);
       throw new HttpError(
         502,
         "AI endpoint request failed or timed out. Check server configuration and retry. Saved questions have not been changed.",
@@ -143,6 +147,7 @@ export async function* conversation(
   context: unknown,
   messages: ModelMessage[],
   signal: AbortSignal,
+  examId: string,
 ): AsyncGenerator<string, unknown> {
   if (fixtureMode()) {
     const text =
@@ -155,7 +160,7 @@ export async function* conversation(
     return { inputTokens: 0, outputTokens: 0 };
   }
   const result = streamText({
-    model: liveModel(),
+    model: liveModel(examId),
     system: `${prompts.common}\n${prompts.conversation}\nCONTEXT: ${JSON.stringify(context)}`,
     messages,
     maxRetries: 0,

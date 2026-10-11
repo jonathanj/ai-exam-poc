@@ -16,3 +16,4 @@ Plans and outcomes accompany each milestone. Git history is assembled from the e
 - `be4e6b9` — feat(ai): add generation and question refinement
 - `5232d56` — feat(delivery): add review and printable exam outputs
 - `33c074e` — fix(runtime): pin mise tools for sqlite compatibility
+- `72b854b` — feat(ai): support configurable inference protocols

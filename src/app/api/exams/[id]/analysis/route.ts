@@ -24,6 +24,7 @@ export async function POST(
     const run = await startRun(exam.id, "analysis", exam.revision);
     runId = run.id;
     const { value, usage, errors } = await validatedGeneration({
+      examId: exam.id,
       task: analysis,
       context: exam,
       schema: analysisSchema,

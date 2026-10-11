@@ -27,3 +27,7 @@ Final pnpm typecheck, lint, test and production build pass. 15 unit tests and tw
 ## Deviations and limitations
 
 Browser PDF/print is used rather than a dedicated document exporter. Very long subparts may span pages; margin-box page counters require modern Chromium. Dockerfile is provided but the image has not been built or deployed. No hosting destination or live credentials were provided. Login/session controls are suitable for a private single-instance POC; production product requirements (account recovery, immutable audits, calibrated question difficulty and formal curriculum grounding) need subsequent implementation records. Grading remains deferred as agreed.
+
+## Commit reference
+
+`5232d56` — feat(delivery): add review and printable exam outputs

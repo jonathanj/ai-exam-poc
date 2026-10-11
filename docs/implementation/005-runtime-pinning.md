@@ -23,3 +23,7 @@ Added mise.toml with Node 24.11.1 and pnpm 10.9.0; aligned package engines and D
 ## Environment finding
 
 The Codex command shell kept Homebrew ahead of mise on inherited PATH for subprocesses, even though direct mise-selected node reported 24. Explicitly prepending `mise where node` and `mise where pnpm` during the rebuild and verification resolved this. README now checks both direct Node and pnpm's subprocess Node, and documents this fallback. A user's normally activated mise shell can use ordinary project-local commands. Existing running dev servers must restart to use the rebuilt module.
+
+## Commit reference
+
+`33c074e` — fix(runtime): pin mise tools for sqlite compatibility

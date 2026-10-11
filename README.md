@@ -60,6 +60,8 @@ Set server-only values in `.env` or the host's secret environment:
 
 For the new OpenCode Console gateway, configure `LLM_BASE_URL=https://opencode.ai/inference/openai/v1`, `LLM_API_PROTOCOL=responses`, `LLM_MODEL=gpt-6-luna`, and your service account key as `LLM_API_KEY`. Leave structured outputs disabled until verified against your gateway. Restart the application after changing environment variables.
 
+OpenCode Go documents a separate subscription route: use `LLM_BASE_URL=https://opencode.ai/zen/go/v1` with `LLM_API_PROTOCOL=responses` for GPT-6 Luna. The general Console route above should not be assumed to use Go subscription allowances. All inference calls send a stable hashed exam ID as `x-opencode-session` and identify the app as `exam-studio/0.1.0`. Go is documented for coding-agent traffic; confirm eligibility for exam authoring with the provider. Authentication and subscription access still need live verification.
+
 - `AI_ADAPTER=live` for real requests (default).
 
 Generation, proposed revisions and analysis validate complete results and allow one repair attempt. A paper must match the question count, total marks, and independently rounded mark targets. Each provider request has a 70-second timeout; generation may make two requests. A busy generation lease expires after three minutes if a process crashes. Failures preserve saved questions. Errors and usage are available under **AI history**.

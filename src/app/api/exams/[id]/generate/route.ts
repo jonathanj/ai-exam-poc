@@ -59,6 +59,7 @@ export async function POST(
     runId = run.id;
     const schema = z.object({ questions: z.array(questionSchema) });
     const { value, usage, errors } = await validatedGeneration({
+      examId: id,
       task: generation,
       context: {
         brief,

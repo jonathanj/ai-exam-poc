@@ -1,6 +1,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { HttpError } from "./http";
+import { createHash } from "node:crypto";
 
 export function liveAiConfig() {
   const {
@@ -47,8 +48,39 @@ export function liveAiConfig() {
   return { baseURL: baseURL.replace(/\/+$/, ""), apiKey, modelId, protocol };
 }
 
-export function liveModel() {
+export function inferenceHeaders(examId: string) {
+  if (!examId) throw new HttpError(503, "AI requests require an exam session.");
+  return {
+    "x-opencode-session": `exam-studio-${createHash("sha256").update(examId).digest("hex")}`,
+    "user-agent": "exam-studio/0.1.0",
+  };
+}
+
+export function liveModel(examId: string) {
   const { baseURL, apiKey, modelId, protocol } = liveAiConfig();
-  if (protocol === "responses") return createOpenAI({ baseURL, apiKey }).responses(modelId);
-  return createOpenAICompatible({ name: "exam-endpoint", baseURL, apiKey, supportsStructuredOutputs: process.env.LLM_STRUCTURED_OUTPUTS === "true" })(modelId);
+  const headers = inferenceHeaders(examId);
+  // The SDK supplies its own user agent after provider headers are merged.
+  const identifiedFetch: typeof globalThis.fetch = (input, init) => {
+    const requestHeaders = new Headers(init?.headers);
+    requestHeaders.set(
+      "user-agent",
+      `exam-studio/0.1.0 ${requestHeaders.get("user-agent") || ""}`.trim(),
+    );
+    return globalThis.fetch(input, { ...init, headers: requestHeaders });
+  };
+  if (protocol === "responses")
+    return createOpenAI({
+      baseURL,
+      apiKey,
+      headers,
+      fetch: identifiedFetch,
+    }).responses(modelId);
+  return createOpenAICompatible({
+    name: "exam-endpoint",
+    baseURL,
+    apiKey,
+    headers,
+    fetch: identifiedFetch,
+    supportsStructuredOutputs: process.env.LLM_STRUCTURED_OUTPUTS === "true",
+  })(modelId);
 }

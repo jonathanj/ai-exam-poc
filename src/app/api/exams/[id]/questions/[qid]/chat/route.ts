@@ -76,6 +76,7 @@ export async function POST(req: NextRequest, ctx: Context) {
               content: m.content,
             })),
             signal,
+            id,
           );
           let usage: unknown;
           while (true) {

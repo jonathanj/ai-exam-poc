@@ -34,6 +34,7 @@ export async function POST(req: NextRequest, ctx: Context) {
       });
       const content = question.content as unknown as QuestionContent;
       const { value, usage, errors } = await validatedGeneration({
+        examId: id,
         task: revisionPrompt,
         context: {
           brief: exam.brief,

@@ -27,3 +27,7 @@ Unit checks cover integer rounding, total/rubric/count constraints and derived n
 ## Deviations and limitations
 
 Questions use a container plus assessable parts, including one-part flat questions; container totals are derived rather than separately editable. Drafts save on Save/Continue, not every keystroke; reopening the brief starts at the first step with saved values. Charts only mount when visible to avoid hidden-panel measurement warnings. Teacher edits may deliberately deviate from blueprint targets. Diagram questions remain deferred.
+
+## Commit reference
+
+`d619d08` — feat(authoring): add exam creation and editing workflow

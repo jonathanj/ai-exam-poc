@@ -17,6 +17,7 @@ import {
 } from "../src/lib/ai-service";
 const schema = z.object({ value: z.number().int().positive() });
 const args = {
+  examId: "test-exam",
   task: "test",
   context: {},
   schema,
@@ -103,7 +104,7 @@ describe("AI boundaries", () => {
   it("honours aborted fixture conversations", async () => {
     vi.stubEnv("AI_ADAPTER", "fixture");
     const abort = new AbortController();
-    const iterator = conversation({}, [], abort.signal);
+    const iterator = conversation({}, [], abort.signal, "test-exam");
     expect((await iterator.next()).done).toBe(false);
     abort.abort();
     await expect(iterator.next()).rejects.toThrow("Interrupted");
