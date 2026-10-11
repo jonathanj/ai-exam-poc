@@ -93,3 +93,47 @@
   text-decoration: underline;
   color: var(--primary);
 }
+.print-paper {
+  max-width: 210mm;
+  margin: 2rem auto;
+  padding: 18mm;
+  background: white;
+  color: #111;
+}
+.answer-space {
+  min-height: 32mm;
+  background: repeating-linear-gradient(
+    white,
+    white 7.8mm,
+    #ddd 7.8mm,
+    #ddd 8mm
+  );
+  margin-top: 4mm;
+}
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+    @bottom-center {
+      content: "Page " counter(page);
+    }
+  }
+  body {
+    background: white;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-paper {
+    padding: 0;
+    margin: 0;
+    max-width: none;
+  }
+  .print-question {
+    break-inside: avoid;
+    margin-top: 8mm;
+  }
+  .print-paper h2 {
+    break-after: avoid;
+  }
+}

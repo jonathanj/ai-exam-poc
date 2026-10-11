@@ -31,6 +31,7 @@ export async function POST(req: NextRequest, ctx: Context) {
           "edit",
           "delete",
           "reorder",
+          "review",
           "duplicate",
           "archive",
         ]),
@@ -99,6 +100,11 @@ export async function POST(req: NextRequest, ctx: Context) {
           where: { id },
           data: { archived: z.boolean().parse(body.payload) },
         });
+      if (body.action === "review") {
+        if (!exam.questions.length)
+          throw new HttpError(400, "Add questions before reviewing.");
+        await tx.exam.update({ where: { id }, data: { status: "reviewed" } });
+      }
       if (body.action === "add") {
         const content = questionSchema.parse(body.payload);
         await tx.question.create({

@@ -434,7 +434,7 @@ export function ExamEditor({ initial }: { initial: ExamView }) {
           <Button
             variant="outline"
             size="sm"
-            disabled
+            disabled={!!busy}
             onClick={() => setConfirm({ kind: "print", mode: "paper" })}
           >
             <Printer className="size-4" />
@@ -443,7 +443,7 @@ export function ExamEditor({ initial }: { initial: ExamView }) {
           <Button
             size="sm"
             disabled={
-              true || !!busy || !exam.questions.length || exam.status === "reviewed"
+              !!busy || !exam.questions.length || exam.status === "reviewed"
             }
             onClick={() => setConfirm({ kind: "review" })}
           >
