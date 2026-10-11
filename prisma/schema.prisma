@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client"
+  output = "../src/generated/prisma"
+}
+datasource db {
+  provider = "sqlite"
+}
+model User {
+  id String @id @default(cuid())
+  email String @unique
+  name String
+  passwordHash String
+  sessions Session[]
+  exams Exam[]
+  createdAt DateTime @default(now())
+}
+model Session {
+  id String @id
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  @@index([userId])
+}
+model Exam {
+  id String @id @default(cuid())
+  ownerId String
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title String
+  status String @default("draft")
+  archived Boolean @default(false)
+  sample Boolean @default(false)
+  brief Json
+  revision Int @default(0)
+  generationToken String?
+  generationStartedAt DateTime?
+  questions Question[]
+  aiRuns AiRun[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([ownerId, archived])
+}
+model Question {
+  id String @id @default(cuid())
+  examId String
+  exam Exam @relation(fields: [examId], references: [id], onDelete: Cascade)
+  position Int
+  revision Int @default(0)
+  provenance String @default("manual")
+  content Json
+  criteria RubricCriterion[]
+  messages ChatMessage[]
+  revisions QuestionRevision[]
+  proposals Proposal[]
+  @@index([examId, position])
+}
+model RubricCriterion {
+  id String @id @default(cuid())
+  questionId String
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  partIndex Int
+  description String
+  marks Int
+}
+model ChatMessage {
+  id String @id @default(cuid())
+  questionId String
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  role String
+  content String
+  createdAt DateTime @default(now())
+}
+model QuestionRevision {
+  id String @id @default(cuid())
+  questionId String
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  revision Int
+  content Json
+  source String
+  createdAt DateTime @default(now())
+  @@unique([questionId, revision])
+}
+model Proposal {
+  id String @id @default(cuid())
+  questionId String
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  inputRevision Int
+  content Json
+  acceptedAt DateTime?
+  createdAt DateTime @default(now())
+}
+model AiRun {
+  id String @id @default(cuid())
+  examId String
+  exam Exam @relation(fields: [examId], references: [id], onDelete: Cascade)
+  questionId String?
+  operation String
+  model String
+  promptVersion String
+  inputRevision Int
+  outcome String @default("running")
+  inputSnapshot Json?
+  validationErrors Json?
+  usage Json?
+  result Json?
+  startedAt DateTime @default(now())
+  completedAt DateTime?
+  @@index([examId, startedAt])
+}

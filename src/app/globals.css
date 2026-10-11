@@ -1,0 +1,95 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@custom-variant dark (&:is(.dark *));
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--secondary);
+  --color-accent-foreground: var(--foreground);
+  --color-destructive: #b54141;
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--primary);
+  --color-sidebar: var(--card);
+  --color-sidebar-foreground: var(--foreground);
+  --color-sidebar-primary: var(--primary);
+  --color-sidebar-primary-foreground: var(--primary-foreground);
+  --color-sidebar-accent: var(--secondary);
+  --color-sidebar-accent-foreground: var(--foreground);
+  --color-sidebar-border: var(--border);
+  --color-sidebar-ring: var(--primary);
+  --radius-sm: 0.35rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+}
+:root {
+  --background: #f6f7f9;
+  --foreground: #202c35;
+  --card: #fff;
+  --primary: #244f47;
+  --primary-foreground: #fff;
+  --secondary: #edf2ef;
+  --muted: #f0f2f4;
+  --muted-foreground: #697782;
+  --border: #e2e7ea;
+}
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    touch-action: manipulation;
+  }
+}
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+}
+.math-content {
+  font-size: 0.925rem;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.math-content p + p {
+  margin-top: 0.75rem;
+}
+.math-content ul,
+.math-content ol {
+  padding-left: 1.4rem;
+  list-style: revert;
+}
+.math-content .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
+.math-content pre {
+  overflow: auto;
+  background: var(--muted);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+}
+.math-content a {
+  text-decoration: underline;
+  color: var(--primary);
+}

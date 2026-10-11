@@ -1,0 +1,13 @@
+import "dotenv/config";
+import { mkdirSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaClient } from "@/generated/prisma/client";
+const url = process.env.DATABASE_URL || "file:./data/exam-studio.db";
+if (url.startsWith("file:"))
+  mkdirSync(dirname(resolve(url.slice(5))), { recursive: true });
+const globalDb = globalThis as unknown as { prisma?: PrismaClient };
+export const db =
+  globalDb.prisma ||
+  new PrismaClient({ adapter: new PrismaBetterSqlite3({ url }) });
+if (process.env.NODE_ENV !== "production") globalDb.prisma = db;

@@ -1,0 +1,14 @@
+node_modules/
+.next/
+.env
+.env.*
+!.env.example
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+src/generated/
+*.tsbuildinfo
+playwright-report/
+test-results/
+TODO.md
