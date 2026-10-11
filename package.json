@@ -59,5 +59,8 @@
     "vitest": "^5.0.3"
   },
   "type": "module",
-  "packageManager": "pnpm@10.9.0"
+  "packageManager": "pnpm@10.9.0",
+  "engines": {
+    "node": ">=24.11.1 <25"
+  }
 }

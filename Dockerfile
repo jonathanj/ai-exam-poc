@@ -1,4 +1,4 @@
-FROM node:24-bookworm-slim AS build
+FROM node:24.11.1-bookworm-slim AS build
 WORKDIR /app
 RUN npm install -g pnpm@10.9.0
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -6,7 +6,7 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm db:generate && pnpm build
 
-FROM node:24-bookworm-slim AS runtime
+FROM node:24.11.1-bookworm-slim AS runtime
 WORKDIR /app
 RUN npm install -g pnpm@10.9.0 && mkdir /data && chown node:node /data
 COPY --from=build --chown=node:node /app /app

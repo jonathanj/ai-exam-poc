@@ -4,9 +4,49 @@ A private Grade 7 Mathematics exam-authoring POC built with Next.js, shadcn/ui, 
 
 ## Run locally
 
-Use Node 24 and pnpm 10.9.0. Run pnpm install --frozen-lockfile, copy .env.example to .env, run pnpm db:generate and pnpm db:migrate. Provision an account with ACCOUNT_PASSWORD in the environment and pnpm account:create email "Name". Start with pnpm dev. Browser origin must match APP_URL.
+The project pins Node 24.11.1 and pnpm 10.9.0 in `mise.toml`. Use the same Node runtime for installing dependencies and running the app because SQLite uses a native module. The lockfile pins dependency versions.
 
-Passwords require at least 12 characters. Keep credentials and SQLite files out of Git.
+```sh
+mise trust
+mise install
+mise exec -- pnpm install --frozen-lockfile
+cp .env.example .env
+mise exec -- pnpm db:generate
+mise exec -- pnpm db:migrate
+```
+
+Provision an account. Pass the password through an environment variable instead of putting it in command history (minimum 12 characters):
+
+```sh
+printf 'New account password: '
+read -r -s ACCOUNT_PASSWORD
+export ACCOUNT_PASSWORD
+mise exec -- pnpm account:create examiner@example.com 'Examiner Name'
+unset ACCOUNT_PASSWORD
+mise exec -- pnpm dev
+```
+
+Open http://localhost:3000 and sign in. In development, the browser URL must match `APP_URL`; set it to `http://127.0.0.1:3000` if you use that hostname instead. Mutating requests verify the origin.
+
+### Recover from a native SQLite version mismatch
+
+If better-sqlite3 reports different `NODE_MODULE_VERSION` values, it was compiled with a different Node major from the one running the command. Switching versions alone does not rebuild an existing native binary. From this directory run:
+
+```sh
+mise trust
+mise install
+mise exec -- node --version
+mise exec -- pnpm exec node --version
+mise exec -- pnpm rebuild better-sqlite3
+```
+
+Both version checks should report `v24.11.1`. If a desktop/CI command environment keeps Homebrew ahead of mise on PATH, explicitly prepend the selected tools:
+
+```sh
+mise exec -- sh -c 'export PATH="$(mise where node)/bin:$(mise where pnpm):$PATH"; pnpm rebuild better-sqlite3'
+```
+
+Use the same PATH wrapper to run pnpm commands in that environment. Retry your account command with `mise exec -- pnpm account:create …`, then restart any existing dev server with the pinned runtime. Rebuild after changing Node versions. These steps preserve the database. If mise is activated in your shell, ordinary `pnpm` commands also use the local pins; `mise exec --` makes the selected runtime explicit.
 
 ## Configure AI
 
