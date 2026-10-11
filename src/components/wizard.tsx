@@ -373,6 +373,10 @@ export function Wizard({
                   setBusy(true);
                   setError("");
                   try {
+                    const current = await request<ExamView>(`/api/exams/${id}`);
+                    await request<ExamView>(`/api/exams/${id}/generate`, {
+                      revision: current.revision,
+                    });
                     router.push(`/exams/${id}`);
                     router.refresh();
                   } catch (e) {
@@ -384,7 +388,7 @@ export function Wizard({
               }}
             >
               <Sparkles className="size-4" />
-              {busy ? "Saving…" : "Create draft"}
+              {busy ? "Generating…" : "Generate paper"}
             </Button>
           )}
         </div>

@@ -61,7 +61,7 @@ import {
   difficultyLabels,
 } from "@/lib/domain";
 import { request } from "@/lib/client";
-type Analysis = { summary: string; findings: { category: "ambiguity" | "duplication" | "coverage" | "answer" | "balance" | "timing"; severity: "info" | "warning"; questionId: string | null; message: string }[] };
+import type { Analysis } from "@/lib/ai-service";
 import { QuestionForm } from "./question-form";
 import { QuestionChat } from "./question-chat";
 import { MathText } from "./math";
@@ -339,8 +339,6 @@ export function ExamEditor({ initial }: { initial: ExamView }) {
     }
   }
   async function generate() {
-    setError("AI authoring is not enabled in this milestone.");
-    return;
     setConfirm(null);
     setBusy("Generating & validating your paper…");
     setError("");
@@ -359,8 +357,6 @@ export function ExamEditor({ initial }: { initial: ExamView }) {
     }
   }
   async function analyse() {
-    setError("AI authoring is not enabled in this milestone.");
-    return;
     setBusy("Analysing paper…");
     setError("");
     try {
@@ -424,7 +420,6 @@ export function ExamEditor({ initial }: { initial: ExamView }) {
           <Button
             variant="outline"
             size="sm"
-            disabled
             onClick={async () => {
               try {
                 setRuns(await request<Run[]>(`/api/exams/${exam.id}/history`));
@@ -591,7 +586,7 @@ export function ExamEditor({ initial }: { initial: ExamView }) {
                   busy={!!busy}
                   onEdit={() => setEditing(q)}
                   onDelete={() => setConfirm({ kind: "delete", id: q.id })}
-                  onChat={() => setError("AI authoring is not enabled in this milestone.")}
+                  onChat={() => setChat(q.id)}
                   onMove={(direction) =>
                     reorder(
                       arrayMove(exam.questions, index, index + direction).map(
