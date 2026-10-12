@@ -2,6 +2,8 @@
 
 A private Grade 7 Mathematics exam-authoring POC built with Next.js, shadcn/ui, Prisma/SQLite, and Vercel AI SDK. Examiners generate from a teacher-defined brief, edit and reorder questions, discuss them with AI, accept proposed revisions, review balance, and print a learner paper or teacher memorandum.
 
+For repository work, start with [AGENTS.md](AGENTS.md), [product context](docs/product-context.md) and the [implementation history](docs/implementation/README.md). These cover engineering rules, current scope and assessment constraints, and the decisions behind the implementation.
+
 ## Run locally
 
 The project pins Node 24.11.1 and pnpm 10.9.0 in `mise.toml`. Use the same Node runtime for installing dependencies and running the app because SQLite uses a native module. The lockfile pins dependency versions.
@@ -89,8 +91,8 @@ Review is the examiner's approval. Subsequent edits, brief changes and ordering 
 ## Verification
 
 ```sh
+pnpm check
 pnpm typecheck
-pnpm lint
 pnpm test
 pnpm build
 pnpm test:e2e

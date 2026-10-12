@@ -9,6 +9,7 @@ Plans and outcomes accompany each milestone. Git history is assembled from the e
 5. [Runtime pinning](005-runtime-pinning.md)
 6. [API protocol](006-api-protocol.md)
 7. [Oxlint and Oxfmt tooling](007-ox-tooling.md)
+8. [Repository guidance](008-repository-guidance.md)
 
 ## Commit references
 
