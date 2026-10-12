@@ -2,7 +2,7 @@
 
 Before significant implementation, create a numbered plan in docs/implementation/ with intention, goal, scope, decisions/rationale, implementation steps, and acceptance checks. Afterward record outcomes, validation, deviations, limitations, and commit references when available. Update the chronological index. Refinements update their existing record; architecture or scope changes get a new one.
 
-Keep exams private: server reads, writes, AI and print must authenticate and enforce ownerId. Never put secrets in client code or logs. AI output must be validated and revisions accepted explicitly. Difficulty and cognitive demand are independent mark-weighted dimensions. Grade 7 maths is the initial scope; official compliance is not claimed. Use pnpm. Run typecheck, lint, tests and production build for significant changes.
+Keep exams private: server reads, writes, AI and print must authenticate and enforce ownerId. Never put secrets in client code or logs. AI output must be validated and revisions accepted explicitly. Difficulty and cognitive demand are independent mark-weighted dimensions. Grade 7 maths is the initial scope; official compliance is not claimed. Use pnpm. Run `pnpm check`, `pnpm typecheck` (tsc), `pnpm test` and `pnpm build` for significant changes. `check` verifies lint and formatting; use `pnpm format` to apply formatting.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

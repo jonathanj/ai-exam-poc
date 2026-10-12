@@ -1,13 +1,13 @@
-import { requireUser } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { metrics, type QuestionContent } from "@/lib/domain";
-import { ExamLibrary } from "@/components/exam-library";
+import {requireUser} from '@/lib/auth';
+import {db} from '@/lib/db';
+import {metrics, type QuestionContent} from '@/lib/domain';
+import {ExamLibrary} from '@/components/exam-library';
 export default async function ExamsPage() {
   const user = await requireUser();
   const exams = await db.exam.findMany({
-    where: { ownerId: user.id },
-    include: { questions: true },
-    orderBy: { updatedAt: "desc" },
+    where: {ownerId: user.id},
+    include: {questions: true},
+    orderBy: {updatedAt: 'desc'},
   });
   return (
     <ExamLibrary
@@ -24,7 +24,7 @@ export default async function ExamsPage() {
             content: q.content as unknown as QuestionContent,
           })),
         ).marks,
-        body: (e.brief as { body: string }).body,
+        body: (e.brief as {body: string}).body,
         questionCount: e.questions.length,
       }))}
     />

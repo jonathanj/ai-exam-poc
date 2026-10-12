@@ -1,12 +1,12 @@
-import { generateText, streamText, Output, type ModelMessage } from "ai";
-import { liveAiConfig, liveModel } from "./ai-model";
-import { logAiFailure } from "./ai-diagnostics";
-import { z } from "zod";
-import { HttpError } from "./http";
-import { db } from "./db";
-import { json } from "./exams";
-import * as prompts from "./prompts/v1";
-export const fixtureMode = () => process.env.AI_ADAPTER === "fixture";
+import {generateText, streamText, Output, type ModelMessage} from 'ai';
+import {liveAiConfig, liveModel} from './ai-model';
+import {logAiFailure} from './ai-diagnostics';
+import {z} from 'zod';
+import {HttpError} from './http';
+import {db} from './db';
+import {json} from './exams';
+import * as prompts from './prompts/v1';
+export const fixtureMode = () => process.env.AI_ADAPTER === 'fixture';
 export function checkAi() {
   if (!fixtureMode()) liveAiConfig();
 }
@@ -18,11 +18,11 @@ export async function startRun(
 ) {
   checkAi();
   const snapshot = await db.exam.findUnique({
-    where: { id: examId },
+    where: {id: examId},
     include: {
       questions: {
-        orderBy: { position: "asc" },
-        include: { revisions: true, messages: true },
+        orderBy: {position: 'asc'},
+        include: {revisions: true, messages: true},
       },
     },
   });
@@ -33,7 +33,7 @@ export async function startRun(
       inputRevision,
       questionId,
       inputSnapshot: json(snapshot),
-      model: fixtureMode() ? "deterministic-fixture" : process.env.LLM_MODEL!,
+      model: fixtureMode() ? 'deterministic-fixture' : process.env.LLM_MODEL!,
       promptVersion: prompts.VERSION,
     },
   });
@@ -41,16 +41,16 @@ export async function startRun(
 export async function finishRun(
   id: string,
   outcome: string,
-  data: { usage?: unknown; result?: unknown; errors?: unknown } = {},
+  data: {usage?: unknown; result?: unknown; errors?: unknown} = {},
 ) {
   await db.aiRun.update({
-    where: { id },
+    where: {id},
     data: {
       outcome,
       completedAt: new Date(),
-      ...(data.usage ? { usage: json(data.usage) } : {}),
-      ...(data.result ? { result: json(data.result) } : {}),
-      ...(data.errors ? { validationErrors: json(data.errors) } : {}),
+      ...(data.usage ? {usage: json(data.usage)} : {}),
+      ...(data.result ? {result: json(data.result)} : {}),
+      ...(data.errors ? {validationErrors: json(data.errors)} : {}),
     },
   });
 }
@@ -75,7 +75,7 @@ export async function validatedGeneration<T>({
     const value = schema.parse(fixture());
     return {
       value: validate ? validate(value) : value,
-      usage: { inputTokens: 0, outputTokens: 0 },
+      usage: {inputTokens: 0, outputTokens: 0},
       errors: [],
     };
   }
@@ -85,13 +85,13 @@ export async function validatedGeneration<T>({
   for (let attempt = 0; attempt < 2; attempt++) {
     let raw: unknown;
     try {
-      const prompt = `${task}\nCONTEXT:\n${JSON.stringify(context)}\nReturn only JSON matching this schema: ${JSON.stringify(z.toJSONSchema(schema))}${errors.length ? `\nRepair these validation errors in a fresh complete response: ${errors.join("; ")}` : ""}`;
-      if (process.env.LLM_STRUCTURED_OUTPUTS === "true") {
+      const prompt = `${task}\nCONTEXT:\n${JSON.stringify(context)}\nReturn only JSON matching this schema: ${JSON.stringify(z.toJSONSchema(schema))}${errors.length ? `\nRepair these validation errors in a fresh complete response: ${errors.join('; ')}` : ''}`;
+      if (process.env.LLM_STRUCTURED_OUTPUTS === 'true') {
         const result = await generateText({
           model: liveModel(examId),
           system: prompts.common,
           prompt,
-          output: Output.object({ schema }),
+          output: Output.object({schema}),
           maxRetries: 0,
           abortSignal: AbortSignal.timeout(70000),
         });
@@ -106,19 +106,13 @@ export async function validatedGeneration<T>({
           abortSignal: AbortSignal.timeout(70000),
         });
         usage = result.totalUsage;
-        raw = JSON.parse(
-          result.text
-            .replace(/^\s*```(?:json)?\s*/, "")
-            .replace(/\s*```\s*$/, ""),
-        );
+        raw = JSON.parse(result.text.replace(/^\s*```(?:json)?\s*/, '').replace(/\s*```\s*$/, ''));
       }
     } catch (error) {
       if (
         error instanceof SyntaxError ||
         (error instanceof Error &&
-          ["NoObjectGeneratedError", "AI_NoObjectGeneratedError"].includes(
-            error.name,
-          ))
+          ['NoObjectGeneratedError', 'AI_NoObjectGeneratedError'].includes(error.name))
       ) {
         errors.push(error.message.slice(0, 1500));
         await onValidation?.(errors);
@@ -127,12 +121,12 @@ export async function validatedGeneration<T>({
       logAiFailure(error);
       throw new HttpError(
         502,
-        "AI endpoint request failed or timed out. Check server configuration and retry. Saved questions have not been changed.",
+        'AI endpoint request failed or timed out. Check server configuration and retry. Saved questions have not been changed.',
       );
     }
     try {
       const value = schema.parse(raw);
-      return { value: validate ? validate(value) : value, usage, errors };
+      return {value: validate ? validate(value) : value, usage, errors};
     } catch (error) {
       errors.push((error as Error).message.slice(0, 3000));
       await onValidation?.(errors);
@@ -140,7 +134,7 @@ export async function validatedGeneration<T>({
   }
   throw new HttpError(
     422,
-    `AI output did not pass validation after one repair attempt. ${errors.join(" | ")}`,
+    `AI output did not pass validation after one repair attempt. ${errors.join(' | ')}`,
   );
 }
 export async function* conversation(
@@ -151,13 +145,13 @@ export async function* conversation(
 ): AsyncGenerator<string, unknown> {
   if (fixtureMode()) {
     const text =
-      "This is a fixture response. Consider making the context more familiar to learners and checking that the rubric rewards the method as well as the final answer. Ask for a revision proposal to preview a change; this conversation does not edit your paper.";
-    for (const word of text.split(" ")) {
-      if (signal.aborted) throw new Error("Interrupted");
-      yield word + " ";
+      'This is a fixture response. Consider making the context more familiar to learners and checking that the rubric rewards the method as well as the final answer. Ask for a revision proposal to preview a change; this conversation does not edit your paper.';
+    for (const word of text.split(' ')) {
+      if (signal.aborted) throw new Error('Interrupted');
+      yield word + ' ';
       await new Promise((r) => setTimeout(r, 15));
     }
-    return { inputTokens: 0, outputTokens: 0 };
+    return {inputTokens: 0, outputTokens: 0};
   }
   const result = streamText({
     model: liveModel(examId),
@@ -174,15 +168,8 @@ export const analysisSchema = z.object({
   findings: z
     .array(
       z.object({
-        category: z.enum([
-          "ambiguity",
-          "duplication",
-          "coverage",
-          "answer",
-          "balance",
-          "timing",
-        ]),
-        severity: z.enum(["info", "warning"]),
+        category: z.enum(['ambiguity', 'duplication', 'coverage', 'answer', 'balance', 'timing']),
+        severity: z.enum(['info', 'warning']),
         questionId: z.string().nullable(),
         message: z.string().min(1),
       }),

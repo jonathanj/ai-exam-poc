@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 @custom-variant dark (&:is(.dark *));
 @theme inline {
   --color-background: var(--background);
@@ -32,7 +32,7 @@
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
-  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 }
 :root {
   --background: #f6f7f9;
@@ -102,12 +102,7 @@
 }
 .answer-space {
   min-height: 32mm;
-  background: repeating-linear-gradient(
-    white,
-    white 7.8mm,
-    #ddd 7.8mm,
-    #ddd 8mm
-  );
+  background: repeating-linear-gradient(white, white 7.8mm, #ddd 7.8mm, #ddd 8mm);
   margin-top: 4mm;
 }
 @media print {
@@ -115,7 +110,7 @@
     size: A4;
     margin: 15mm;
     @bottom-center {
-      content: "Page " counter(page);
+      content: 'Page ' counter(page);
     }
   }
   body {

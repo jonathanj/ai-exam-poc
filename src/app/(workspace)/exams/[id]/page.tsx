@@ -1,13 +1,9 @@
-import { notFound } from "next/navigation";
-import { requireUser } from "@/lib/auth";
-import { examView } from "@/lib/exams";
-import { HttpError } from "@/lib/http";
-import { ExamEditor } from "@/components/exam-editor";
-export default async function ExamPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+import {notFound} from 'next/navigation';
+import {requireUser} from '@/lib/auth';
+import {examView} from '@/lib/exams';
+import {HttpError} from '@/lib/http';
+import {ExamEditor} from '@/components/exam-editor';
+export default async function ExamPage({params}: {params: Promise<{id: string}>}) {
   const user = await requireUser();
   let exam;
   try {
